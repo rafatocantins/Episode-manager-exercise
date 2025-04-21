@@ -103,3 +103,32 @@ export const popularEpisodes = [
   { showTitle: 'Money Heist', imdbID: 'tt6468322', season: 1, episode: 1, title: 'Efectuar lo acordado' },
   { showTitle: 'Money Heist', imdbID: 'tt6468322', season: 2, episode: 1, title: 'Se acabaron las máscaras' }
 ];
+
+export const getEpisodeData = async (
+  showTitle: string,
+  season: number,
+  episode: number
+): Promise<OmdbShowData> => {
+  try {
+    const popularShow = popularShows.find((show) => show.title === showTitle);
+
+    let imdbID: string | undefined;
+
+    if (popularShow) {
+      imdbID = popularShow.imdbID;
+    } else {
+      const showData = await fetchShowData(showTitle);
+      imdbID = showData.imdbID;
+    }
+
+    if (!imdbID) {
+      throw new Error('Could not find imdbID for show');
+    }
+
+    const episodeData = await fetchEpisodeData(imdbID, season, episode);
+    return episodeData;
+  } catch (error) {
+    console.error('Error getting episode data:', error);
+    throw error;
+  }
+};

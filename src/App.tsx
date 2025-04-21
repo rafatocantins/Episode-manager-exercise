@@ -5,7 +5,7 @@ import EpisodeList from './components/EpisodeList';
 import EpisodeDetail from './components/EpisodeDetail';
 import EpisodeForm from './components/EpisodeForm';
 import ShowDetail from './components/ShowDetail';
-import PopularEpisodes from './components/PopularEpisodes';
+import PopularEpisodes from './components/PopularEpisodes'; // Ensure this file exists in the components folder
 import Modal from './components/Modal';
 import { useSubscription, useMutation, useQuery } from '@apollo/client';
 import { ON_CREATE, ON_DELETE, ON_UPDATE, CREATE_EPISODE, UPDATE_EPISODE, LIST_EPISODES } from './graphql/queries';
@@ -231,22 +231,16 @@ const App: React.FC = () => {
                 <label className="text-gray-300 block mb-1">Search Episodes:</label>
                 <SearchBar value={search} onChange={setSearch} />
               </div>
-            </div>
-          </div>
-
-          {/* Episode List */}
-          <div className="bg-gray-800 rounded-lg p-4 min-h-[100px]">
-            <h3 className="text-lg font-bold mb-4">Episode List</h3>
-            {/* Removed max-h and overflow-y-auto from here, EpisodeList handles scrolling */}
-            <div className="pr-2">
-              <EpisodeList
-                search={debounced}
-                onSelect={(id) => { setSelectedId(id); setShowForm(false); }}
-                series={selectedApiSeries}
-                onSeasonsLoaded={(seasons) => setApiSeasons(seasons)}
-                selectedSeason={selectedSeries}
-                selectedEpisodeId={selectedId} // Pass the selected ID state
-              />
+              <div className='mb-4'>
+                <EpisodeList
+                  search={debounced}
+                  onSelect={(id) => { setSelectedId(id); setShowForm(false); }}
+                  series={selectedApiSeries}
+                  onSeasonsLoaded={(seasons) => setApiSeasons(seasons)}
+                  selectedSeason={selectedSeries}
+                  selectedEpisodeId={selectedId} // Pass the selected ID state
+                />
+              </div>
             </div>
           </div>
 

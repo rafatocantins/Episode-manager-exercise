@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getEpisodeData } from '../utils/omdbApi';
 
 interface EpisodeListItemProps {
   id: string;
@@ -6,7 +7,6 @@ interface EpisodeListItemProps {
   title: string;
   seasonNumber: number;
   episodeNumber: number;
-  imageUrl?: string; // Optional for now
   averageRating?: number; // Optional for now
   onSelect: (id: string) => void;
   isSelected: boolean; // To highlight the selected item
@@ -21,13 +21,27 @@ const EpisodeListItem: React.FC<EpisodeListItemProps> = ({
   title,
   seasonNumber,
   episodeNumber,
-  imageUrl,
   averageRating,
   onSelect,
   isSelected,
 }) => {
+  const [episodeImageUrl, setEpisodeImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchEpisodeImage = async () => {
+      try {
+        const episodeData = await getEpisodeData(series, seasonNumber, episodeNumber);
+        setEpisodeImageUrl(episodeData.Poster);
+      } catch (error) {
+        console.error('Error fetching episode image:', error);
+      }
+    };
+
+    fetchEpisodeImage();
+  }, [series, seasonNumber, episodeNumber]);
+
   const displayRating = averageRating ? averageRating.toFixed(1) : 'N/A';
-  const imageSrc = imageUrl || PLACEHOLDER_IMAGE;
+  const imageSrc = episodeImageUrl || PLACEHOLDER_IMAGE;
 
   // Conditional styling for selected item
   const itemClasses = `
@@ -41,11 +55,11 @@ const EpisodeListItem: React.FC<EpisodeListItemProps> = ({
   return (
     <li className={itemClasses} onClick={() => onSelect(id)}>
       {/* Left Side: Image */}
-      <div className="flex-shrink-0 w-24 h-4"> {/* Fixed size for image container */}
+      <div className="w-24 h-16"> {/* Fixed size for image container */}
         <img
           src={imageSrc}
           alt={`${series} - ${title}`}
-          className="w-full h-full object-cover rounded" // Cover ensures image fills space
+          className="w-full h-16 object-cover rounded" // Cover ensures image fills space
         />
       </div>
 

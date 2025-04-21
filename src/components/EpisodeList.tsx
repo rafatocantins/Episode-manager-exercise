@@ -83,7 +83,7 @@ const EpisodeList: React.FC<Props> = ({
       setMockSeasons(seasons);
       onSeasonsLoaded(seasons);
     }
-  }, [useMockData, search, series, onSeasonsLoaded]);
+  }, [useMockData, search, series]);
 
   // --- Themed Loading and Error States ---
   if ((loading || seasonsLoading) && !useMockData) {
@@ -150,7 +150,6 @@ const EpisodeList: React.FC<Props> = ({
               title={ep.title}
               seasonNumber={ep.seasonNumber}
               episodeNumber={ep.episodeNumber}
-              imageUrl={ep.imageUrl} // Pass potential image URL
               averageRating={ep.averageRating} // Pass potential rating
               onSelect={onSelect} // Pass the original onSelect handler to notify parent
               isSelected={ep.id === selectedEpisodeId} // Check against ID from parent
