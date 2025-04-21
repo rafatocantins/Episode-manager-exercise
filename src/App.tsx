@@ -235,15 +235,17 @@ const App: React.FC = () => {
           </div>
 
           {/* Episode List */}
-          <div className="bg-gray-800 rounded-lg p-4 min-h-[400px]">
+          <div className="bg-gray-800 rounded-lg p-4 min-h-[100px]">
             <h3 className="text-lg font-bold mb-4">Episode List</h3>
-            <div className="max-h-[600px] overflow-y-auto pr-2">
+            {/* Removed max-h and overflow-y-auto from here, EpisodeList handles scrolling */}
+            <div className="pr-2">
               <EpisodeList
                 search={debounced}
                 onSelect={(id) => { setSelectedId(id); setShowForm(false); }}
                 series={selectedApiSeries}
                 onSeasonsLoaded={(seasons) => setApiSeasons(seasons)}
                 selectedSeason={selectedSeries}
+                selectedEpisodeId={selectedId} // Pass the selected ID state
               />
             </div>
           </div>
