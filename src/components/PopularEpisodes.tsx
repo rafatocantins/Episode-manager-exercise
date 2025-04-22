@@ -15,14 +15,11 @@ const PopularEpisodes: React.FC<PopularEpisodesProps> = ({ onSelect }) => {
     const fetchEpisodes = async () => {
       setLoading(true);
       try {
-        // Fetch data for a subset of episodes to avoid rate limiting
-        const episodesToFetch = popularEpisodes.slice(0, 6);
-        const episodePromises = episodesToFetch.map(async (ep) => {
+        const episodePromises = popularEpisodes.map(async (ep) => {
           try {
             const data = await fetchEpisodeData(ep.imdbID, ep.season, ep.episode);
             return { ...data, showTitle: ep.showTitle };
           } catch (error) {
-            // Return a fallback for this episode
             return {
               Title: ep.title,
               showTitle: ep.showTitle,
@@ -47,14 +44,12 @@ const PopularEpisodes: React.FC<PopularEpisodesProps> = ({ onSelect }) => {
     fetchEpisodes();
   }, []);
   
-  // Filter episodes based on selected show and search term
   const filteredEpisodes = episodes.filter((episode) => {
     const matchesShow = selectedShow ? episode.showTitle === selectedShow : true;
-    const matchesSearch = searchTerm 
+    return searchTerm 
       ? episode.Title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         episode.showTitle.toLowerCase().includes(searchTerm.toLowerCase())
-      : true;
-    return matchesShow && matchesSearch;
+      : matchesShow;
   });
   
   if (loading) {
@@ -108,7 +103,7 @@ const PopularEpisodes: React.FC<PopularEpisodesProps> = ({ onSelect }) => {
                 }}
               />
               <h3 className="text-md font-bold">{episode.showTitle}</h3>
-              <p className="text-gray-400 text-sm">{episode.Title}</p>
+              <p className="text-gray-400 text-sm">{episode.Title} - S{episode.Season}E{episode.Episode}</p>
               <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded">
                 <p className="text-white text-center p-4 text-sm">{episode.Plot || `Episode from ${episode.showTitle}`}</p>
                 {episode.imdbRating !== "N/A" && (
