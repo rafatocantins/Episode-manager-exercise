@@ -44,3 +44,53 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Running the Application
+
+To run the application, use the following command:
+
+### `npm start`
+
+This command will start the development server and open the application in your browser. You can then view the header component at [http://localhost:3000](http://localhost:3000).
+
+## Project Description
+
+This project is an Episode Manager application built with React. It allows users to search for and manage episodes of their favorite TV shows.
+
+## Current Status
+
+The project is still under development and has the following issues or missing parts that I want to address before completing the project:
+
+-   Missing BEM and SCSS files structure: The project does not currently use BEM (Block Element Modifier) for CSS class naming or SCSS for CSS pre-processing to ensure a more organized and maintainable codebase.
+-   .env variables not accessible in .tsx files: The application is unable to access environment variables defined in the `.env` file within the `.tsx` files.
+-   401 error from GraphQL API: The application is encountering a 401 error when making requests to the GraphQL API. I've created a fallback with mockData to simulate the API response, but I need to resolve the 401 error to use the actual API. I also used the OMDB API as a fallback for the GraphQL API.
+
+## Features
+
+-   Search for episodes of your favorite TV shows.
+-   View details about each episode.
+-   Create, update, and delete episodes.
+-   Filter episodes by season.
+-   View popular episodes.
+
+## How to Use
+
+1.  Clone the repository: `git clone <repository-url>`
+2.  Install dependencies: `npm install`
+3.  Start the development server: `npm start`
+4.  Open the application in your browser: [http://localhost:3000](http://localhost:3000)
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1.  Fork the repository.
+2.  Create a new branch: `git checkout -b feature/your-feature`
+3.  Make your changes.
+4.  Commit your changes: `git commit -m 'Add your feature'`
+5.  Push to the branch: `git push origin feature/your-feature`
+6.  Create a pull request.
+
+## License
+
+This project is licensed under the MIT License.

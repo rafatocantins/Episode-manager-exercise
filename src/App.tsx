@@ -21,9 +21,6 @@ const App: React.FC = () => {
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
-  const [createEpisode] = useMutation(CREATE_EPISODE);
-  const [updateEpisode] = useMutation(UPDATE_EPISODE);
-  const [mockSearch, setMockSearch] = useState<string>('');
   const [selectedSeries, setSelectedSeries] = useState<string>('');
   const [selectedApiSeries, setSelectedApiSeries] = useState<string>('');
   const [apiSeasons, setApiSeasons] = useState<number[]>([]);
