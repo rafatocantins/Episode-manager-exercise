@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { popularEpisodes, popularShows, fetchEpisodeData, OmdbShowData } from '../utils/omdbApi';
 
 interface PopularEpisodesProps {
-  onSelect?: (episodeData: OmdbShowData) => void;
+  onSelect?: (episodeData: OmdbShowData & { showTitle: string }) => void;
 }
 
 const PopularEpisodes: React.FC<PopularEpisodesProps> = ({ onSelect }) => {

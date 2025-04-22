@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_EPISODE } from '../graphql/queries';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_EPISODE, DELETE_EPISODE } from '../graphql/queries';
 import { getEpisodeById as getMockEpisode } from '../utils/mockData';
-import EpisodeAnalytics from './EpisodeAnalytics'; // Import the new component
+import EpisodeAnalytics from './EpisodeAnalytics';
+import Modal from './Modal'; // Import the Modal component
+import EpisodeForm from './EpisodeForm';// Import EpisodeForm
+import { toast } from 'react-toastify';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 interface Props {
   id: string | null;
@@ -11,6 +15,8 @@ interface Props {
 const EpisodeDetail: React.FC<Props> = ({ id }) => {
   const [useMockData, setUseMockData] = useState<boolean>(false);
   const [mockEpisode, setMockEpisode] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   const { data, loading, error } = useQuery(GET_EPISODE, {
     variables: { id },
@@ -21,6 +27,27 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
       setUseMockData(true);
     }
   });
+
+  const [deleteEpisode, { loading: deleteLoading, error: deleteError }] = useMutation(DELETE_EPISODE);
+
+  const handleDelete = async () => {
+    if (!id) {
+      console.error("Episode ID is null or undefined");
+      return;
+    }
+
+    try {
+      await deleteEpisode({ variables: { id } });
+      // Handle successful deletion (e.g., navigate back to episode list, show a success message)
+      console.log("Episode deleted successfully");
+      toast.success("Episode deleted successfully!");
+      window.location.href = '/'; // Redirect to the home page after deletion
+    } catch (err) {
+      // Handle deletion error (e.g., show an error message)
+      console.error("Failed to delete episode", err);
+      toast.error("Failed to delete episode");
+    }
+  };
 
   // Load mock data if needed or if GraphQL failed
   useEffect(() => {
@@ -121,6 +148,33 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
           View on IMDb
         </a>
       )}
+      <div className="flex justify-end space-x-2 mb-4">
+        <button
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setIsDeleteModalOpen(true)}
+        >
+          Delete
+        </button>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Edit
+        </button>
+      </div>
+
+      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <EpisodeForm episodeId={id} onClose={() => setIsModalOpen(false)}/>
+      </Modal>
+      
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={() => {
+          handleDelete();
+          setIsDeleteModalOpen(false);
+        }}
+      />
 
       {/* Analytics section (already themed) */}
       <EpisodeAnalytics />

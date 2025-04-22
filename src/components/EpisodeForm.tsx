@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_EPISODE, UPDATE_EPISODE } from '../graphql/queries';
+import { toast } from 'react-toastify';
 
 interface FormProps {
   series: string;
@@ -11,27 +14,56 @@ interface FormProps {
 }
 
 interface Props {
-  existing?: any;
-  onCompleted: () => void;
-  onSubmit: (form: FormProps, existing: any) => void;
+  episodeId: string | null;
+  onClose: () => void;
 }
 
-const EpisodeForm: React.FC<Props> = ({ existing, onCompleted, onSubmit }) => {
-  const isEdit = Boolean(existing);
-  const [form, setForm] = useState({
-    series: existing?.series || '',
-    title: existing?.title || '',
-    description: existing?.description || '',
-    seasonNumber: existing?.seasonNumber || 1,
-    episodeNumber: existing?.episodeNumber || 1,
-    releaseDate: existing?.releaseDate || '',
-    imdbId: existing?.imdbId || ''
+const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
+  const { data, loading, error } = useQuery(GET_EPISODE, {
+    variables: { id: episodeId },
+    skip: !episodeId,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [updateEpisode, { loading: updateLoading, error: updateError }] = useMutation(UPDATE_EPISODE);
+
+  const [form, setForm] = useState<FormProps>({
+    series: '',
+    title: '',
+    description: '',
+    seasonNumber: 1,
+    episodeNumber: 1,
+    releaseDate: '',
+    imdbId: ''
+  });
+
+  useEffect(() => {
+    if (data?.getEpisodeById) {
+      const { series, title, description, seasonNumber, episodeNumber, releaseDate, imdbId } = data.getEpisodeById;
+      setForm({
+        series,
+        title,
+        description,
+        seasonNumber,
+        episodeNumber,
+        releaseDate,
+        imdbId
+      });
+    }
+  }, [data]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form, existing);
+    try {
+      await updateEpisode({ variables: { id: episodeId, ...form } });
+      onClose();
+    } catch (err) {
+      console.error("Failed to update episode", err);
+      toast.error("Failed to update episode");
+    }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :</p>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2 relative">
@@ -84,11 +116,11 @@ const EpisodeForm: React.FC<Props> = ({ existing, onCompleted, onSubmit }) => {
           type="submit"
           className="bg-primary text-white py-2 px-4 rounded hover:bg-red-700 transition-colors"
         >
-          {isEdit ? 'Update' : 'Create'} Episode
+          {episodeId ? 'Update' : 'Create'} Episode
         </button>
         <button
           type="button"
-          onClick={onCompleted}
+          onClick={onClose}
           className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
         >
           Cancel

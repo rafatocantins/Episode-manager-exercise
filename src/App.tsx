@@ -10,6 +10,8 @@ import Modal from './components/Modal';
 import { useSubscription, useMutation, useQuery } from '@apollo/client';
 import { ON_CREATE, ON_DELETE, ON_UPDATE, CREATE_EPISODE, UPDATE_EPISODE, LIST_EPISODES } from './graphql/queries';
 import { OmdbShowData } from './utils/omdbApi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Episode {
   id: string;
@@ -29,12 +31,6 @@ interface FormProps {
   episodeNumber: number;
   releaseDate: string;
   imdbId: string;
-}
-
-interface EpisodeFormProps {
-  existing?: any;
-  onCompleted: () => void;
-  onSubmit: (form: FormProps, existing: any) => void;
 }
 
 const mockEpisodes: Episode[] = [
@@ -140,20 +136,15 @@ const App: React.FC = () => {
     try {
       if (isEdit) {
         await updateEpisode({ variables: { input } });
+        toast.success("Episode updated successfully!");
       } else {
         await createEpisode({ variables: { input } });
+        toast.success("Episode created successfully!");
       }
-      setToastType('success');
-      setToastMessage(`Episode ${isEdit ? 'updated' : 'created'} successfully!`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
       setShowForm(false);
     } catch (error: any) {
       console.error('Error submitting form:', error);
-      setToastType('error');
-      setToastMessage(`Failed to ${isEdit ? 'update' : 'create'} episode: ${error.message}`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      toast.error(`Failed to create episode: ${error.message}`);
     }
   };
 
@@ -199,7 +190,7 @@ const App: React.FC = () => {
 
           {/* Popular Episodes Section */}
           <PopularEpisodes 
-            onSelect={(episodeData) => {
+            onSelect={(episodeData: OmdbShowData & { showTitle: string }) => {
               console.log('Selected episode:', episodeData);
               // You could add additional functionality here if needed
             }}
@@ -256,12 +247,11 @@ const App: React.FC = () => {
       {showForm && (
         <Modal show={showForm} onClose={() => setShowForm(false)} >
           <h2 className="text-2xl font-bold mb-4">
-            {selectedId ? 'Edit Episode' : 'Create New Episode'}
+            Create New Episode
           </h2>
           <EpisodeForm
-            existing={null}
-            onCompleted={() => setShowForm(false)}
-            onSubmit={handleSubmit}
+            episodeId={null}
+            onClose={() => setShowForm(false)}
           />
         </Modal>
       )}
@@ -273,6 +263,7 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );
 };
