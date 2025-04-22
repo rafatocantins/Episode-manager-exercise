@@ -13,83 +13,6 @@ import { OmdbShowData } from './utils/omdbApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-interface Episode {
-  id: string;
-  series: string;
-  title: string;
-  seasonNumber: number;
-  episodeNumber: number;
-  description: string;
-  imageUrl?: string;
-}
-
-interface FormProps {
-  series: string;
-  title: string;
-  description: string;
-  seasonNumber: number;
-  episodeNumber: number;
-  releaseDate: string;
-  imdbId: string;
-}
-
-const mockEpisodes: Episode[] = [
-  {
-    id: '1',
-    series: 'Stranger Things',
-    title: 'The Vanishing of Will Byers',
-    seasonNumber: 1,
-    episodeNumber: 1,
-    description: 'In 1980s Indiana, a group of young friends witness supernatural forces and secret government exploits. As they search for answers, the children unravel a series of extraordinary mysteries.',
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BNjI1ODk2NjYwNF5BMl5BanBnXkEycGhvcg.jpg',
-  },
-  {
-    id: '2',
-    series: 'The Crown',
-    title: 'Wolferton Splash',
-    seasonNumber: 1,
-    episodeNumber: 1,
-    description: 'Princess Elizabeth marries Philip Mountbatten at Westminster Abbey. As King George VI’s health declines, Elizabeth is increasingly torn between her duty and her desire to be with her husband.',
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BNjI1ODk2NjYwNF5BMl5BanBnXkEycGhvcg.jpg',
-  },
-  {
-    id: '3',
-    series: 'Bridgerton',
-    title: 'Diamond of the First Water',
-    seasonNumber: 1,
-    episodeNumber: 1,
-    description: 'When a scandal sheet prints rumors about her, debutante Daphne Bridgerton enters a fake courtship with the rebellious Duke of Hastings, who has vowed to remain a bachelor.',
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BNjI1ODk2NjYwNF5BMl5BanBnXkEycGhvcg.jpg',
-  },
-  {
-    id: '4',
-    series: 'Squid Game',
-    title: 'Red Light, Green Light',
-    seasonNumber: 1,
-    episodeNumber: 1,
-    description: "Hundreds of cash-strapped players accept a strange invitation to compete in children's games. Inside, a tempting prize awaits — with deadly high stakes.",
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BYWE3MDVkN2EtNjQ5MS00ZDQ4LTgwYjYtNjFkZDA4MDFjMmI4XkEyXkFqcGdeQXVyMTEzMTI3NDEz._V1_QL75_UX190_CR0,0,190,281_.jpg',
-  },
-  {
-    id: '5',
-    series: 'Dark',
-    title: "Secrets",
-    seasonNumber: 1,
-    episodeNumber: 1,
-    description: "A child's disappearance triggers fear and a frantic hunt in a small German town. Secrets begin to unravel, and tangled relationships emerge.",
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BMjMwMDgyOGQ2OV5BMl5BanBnXkEycGhvcg.jpg',
-  },
-  {
-    id: '6',
-    series: 'Money Heist',
-    title: "Efectuar la entrada",
-    seasonNumber: 1,
-    episodeNumber: 1,
-    description: "Eight thieves take hostages and lock themselves in the Royal Mint of Spain as a criminal mastermind manipulates the police to carry out his plan.",
-    imageUrl: 'https://m.media-amazon.com/images/M/MV5BNDJkYzNkMmQtMWM0ZC00MDBiLWFmMjYtZDU4NzQ3MmQ4MzQ1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_QL75_UX190_CR0,3,190,281_.jpg',
-  },
-];
-
 const App: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const debounced = useDebounce(search, 400);
@@ -104,12 +27,6 @@ const App: React.FC = () => {
   const [selectedSeries, setSelectedSeries] = useState<string>('');
   const [selectedApiSeries, setSelectedApiSeries] = useState<string>('');
   const [apiSeasons, setApiSeasons] = useState<number[]>([]);
-
-  const filteredMockEpisodes = mockEpisodes.filter((episode) =>
-    (episode.title.toLowerCase().includes(mockSearch.toLowerCase()) ||
-      episode.series.toLowerCase().includes(mockSearch.toLowerCase())) &&
-    (selectedSeries === '' || episode.series === selectedSeries)
-  );
 
   const { data: created } = useSubscription(ON_CREATE);
   const { data: updated } = useSubscription(ON_UPDATE);
@@ -129,24 +46,6 @@ const App: React.FC = () => {
       if (deleted.onDeleteEpisode === selectedId) setSelectedId(null);
     }
   }, [deleted, selectedId]);
-
-  const handleSubmit = async (form: FormProps, existing: any) => {
-    const isEdit = Boolean(existing);
-    const input = { id: existing?.id || Date.now().toString(), ...form };
-    try {
-      if (isEdit) {
-        await updateEpisode({ variables: { input } });
-        toast.success("Episode updated successfully!");
-      } else {
-        await createEpisode({ variables: { input } });
-        toast.success("Episode created successfully!");
-      }
-      setShowForm(false);
-    } catch (error: any) {
-      console.error('Error submitting form:', error);
-      toast.error(`Failed to create episode: ${error.message}`);
-    }
-  };
 
   // Calculate total seasons and episodes for the selected series
   const getShowStats = () => {

@@ -11,34 +11,6 @@ export interface MockEpisode {
   imdbId: string;
 }
 
-// Removed duplicate declaration of mockEpisodes
-
-// Removed duplicate declaration of getSeasons
-
-// Removed duplicate declaration of getEpisodeById
-
-export const listEpisodes = (search: string = '', series: string = ''): MockEpisode[] => {
-  return mockEpisodes.filter(ep => {
-    const matchesSearch = search 
-      ? ep.title.toLowerCase().includes(search.toLowerCase()) || 
-        ep.series.toLowerCase().includes(search.toLowerCase())
-      : true;
-    const matchesSeries = series ? ep.series === series : true;
-    return matchesSearch && matchesSeries;
-  });
-};// Mock data for episodes when GraphQL API is unavailable
-
-export interface MockEpisode {
-  id: string;
-  series: string;
-  title: string;
-  seasonNumber: number;
-  episodeNumber: number;
-  description: string;
-  releaseDate: string;
-  imdbId: string;
-}
-
 export const mockEpisodes: MockEpisode[] = [
   {
     id: '1',
@@ -153,4 +125,13 @@ export const getEpisodeById = (id: string): MockEpisode | undefined => {
   return mockEpisodes.find(ep => ep.id === id);
 };
 
-// Removed duplicate declaration of listEpisodes
+export const listEpisodes = (search: string = '', series: string = ''): MockEpisode[] => {
+  return mockEpisodes.filter(ep => {
+    const matchesSearch = search
+      ? ep.title.toLowerCase().includes(search.toLowerCase()) ||
+        ep.series.toLowerCase().includes(search.toLowerCase())
+      : true;
+    const matchesSeries = series ? ep.series === series : true;
+    return matchesSearch && matchesSeries;
+  });
+};

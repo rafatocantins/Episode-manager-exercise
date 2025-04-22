@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { LIST_EPISODES, GET_SEASONS } from '../graphql/queries';
-import { listEpisodes as getMockEpisodes, getSeasons as getMockSeasons } from '../utils/mockData';
+import { listEpisodes as getMockEpisodes, getSeasons as getMockSeasons, MockEpisode } from '../utils/mockData';
 import EpisodeListItem from './EpisodeListItem'; // Import the new component
 
 // Extend Episode interface if needed (e.g., for imageUrl, averageRating from API)
@@ -71,7 +71,7 @@ const EpisodeList: React.FC<Props> = ({
       console.log('Using mock data for episodes and seasons.');
       const episodes = getMockEpisodes(search, series);
       // Add mock rating/image if needed for display consistency
-      const episodesWithMockExtras = episodes.map(ep => ({
+      const episodesWithMockExtras = episodes.map((ep: MockEpisode) => ({
           ...ep,
           // Add mock data here if your mock function doesn't provide it
           // imageUrl: `https://placehold.co/100x56/png?text=S${ep.seasonNumber}E${ep.episodeNumber}`,

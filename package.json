@@ -51,6 +51,7 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "ts-prune": "^0.10.3"
   }
 }
