@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_EPISODE, UPDATE_EPISODE } from '../graphql/queries';
+import { GET_EPISODE, UPDATE_EPISODE, CREATE_EPISODE } from '../graphql/queries';
 import { toast } from 'react-toastify';
 
 interface FormProps {
@@ -25,6 +25,7 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
   });
 
   const [updateEpisode, { loading: updateLoading, error: updateError }] = useMutation(UPDATE_EPISODE);
+  const [createEpisode, { loading: createLoading, error: createError }] = useMutation(CREATE_EPISODE);
 
   const [form, setForm] = useState<FormProps>({
     series: '',
@@ -54,16 +55,45 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateEpisode({ variables: { id: episodeId, ...form } });
-      onClose();
+      if (episodeId) {
+        // Update existing episode
+        await updateEpisode({ variables: { input: { id: episodeId, ...form } } });
+        toast.success("Episode updated successfully!");
+      } else {
+        // Create new episode
+        await createEpisode({ variables: { input: form } });
+        toast.success("Episode created successfully!");
+      }
+      onClose(); // Close modal on success
     } catch (err) {
-      console.error("Failed to update episode", err);
-      toast.error("Failed to update episode");
+      const action = episodeId ? 'update' : 'create';
+      console.error(`Failed to ${action} episode`, err);
+      toast.error(`Failed to ${action} episode`);
+      onClose();
     }
   };
 
+  const isMutating = updateLoading || createLoading;
+
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :</p>;
+  // Display mutation errors if they occur
+  if (error || updateError || createError) {
+     const errorMessage = error?.message || updateError?.message || createError?.message || 'An error occurred';
+     return (
+      <div>
+        <p>Error: {errorMessage}</p>
+        <div className="flex justify-end space-x-2 mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+      );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2 relative">
@@ -114,9 +144,10 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
       <div className="flex justify-end space-x-2">
         <button
           type="submit"
-          className="bg-primary text-white py-2 px-4 rounded hover:bg-red-700 transition-colors"
+          disabled={isMutating}
+          className={`bg-primary text-white py-2 px-4 rounded hover:bg-red-700 transition-colors ${isMutating ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          {episodeId ? 'Update' : 'Create'} Episode
+          {isMutating ? 'Saving...' : (episodeId ? 'Update' : 'Create') + ' Episode'}
         </button>
         <button
           type="button"
