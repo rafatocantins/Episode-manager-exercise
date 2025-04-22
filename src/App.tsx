@@ -47,17 +47,17 @@ const App: React.FC = () => {
   // Calculate total seasons and episodes for the selected series
   const getShowStats = () => {
     if (!selectedApiSeries) return { seasons: 0, episodes: 0 };
-    
+
     const seasons = apiSeasons.length;
-    const episodes = data?.listEpisodes?.filter((ep: any) => 
+    const episodes = data?.listEpisodes?.filter((ep: any) =>
       ep.series === selectedApiSeries
     ).length || 0;
-    
+
     return { seasons, episodes };
   };
 
-  const { data } = useQuery(LIST_EPISODES, { 
-    variables: { search: '', series: selectedApiSeries },
+const { data } = useQuery(LIST_EPISODES, { 
+    variables: { search: debounced, series: selectedApiSeries },
     skip: !selectedApiSeries
   });
 
@@ -132,7 +132,7 @@ const App: React.FC = () => {
           <ShowDetail />
 
           {/* Popular Episodes Section */}
-          <PopularEpisodes 
+          <PopularEpisodes
             onSelect={(episodeData: OmdbShowData & { showTitle: string }) => {
               console.log('Selected episode:', episodeData);
               // You could add additional functionality here if needed

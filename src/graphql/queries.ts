@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const LIST_EPISODES = gql`
-  query ListEpisodes($search: String, $series: String) {
-    listEpisodes(search: $search, series: $series) {
+  query ListEpisodes($search: String) {
+    listEpisodes(search: $search) {
       id
       series
       title

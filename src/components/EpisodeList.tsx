@@ -36,14 +36,13 @@ const EpisodeList: React.FC<Props> = ({
   const [mockSeasons, setMockSeasons] = useState<number[]>([]);
   const [useMockData, setUseMockData] = useState<boolean>(false);
 
+  useEffect(() => {
+    console.log("Search prop changed:", search);
+  }, [search]);
+
   // GraphQL query for episodes
   const { data, loading, error } = useQuery(LIST_EPISODES, {
     variables: { search, series },
-    skip: useMockData, // Skip if using mock data
-    onError: () => {
-      console.warn("GraphQL episode query failed, switching to mock data.");
-      setUseMockData(true);
-    }
   });
 
   // GraphQL query for seasons
