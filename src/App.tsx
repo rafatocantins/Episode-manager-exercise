@@ -79,21 +79,8 @@ const App: React.FC = () => {
 
       {/* Two-column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="space-y-6">
-          {/* Show Details from OMDB API */}
-          <ShowDetail />
-
-          {/* Popular Episodes Section */}
-          <PopularEpisodes 
-            onSelect={(episodeData: OmdbShowData & { showTitle: string }) => {
-              console.log('Selected episode:', episodeData);
-              // You could add additional functionality here if needed
-            }}
-          />
-        </div>
-
-        {/* Right Column */}
+    
+        {/* left Column */}
         <div className="space-y-6">
           {/* Season Filter and Search */}
           <div className="bg-gray-800 rounded-lg p-4">
@@ -138,6 +125,19 @@ const App: React.FC = () => {
               <EpisodeDetail id={selectedId} />
             </div>
           </div>
+        </div>
+        {/* Left Column */}
+        <div className="space-y-6">
+          {/* Show Details from OMDB API */}
+          <ShowDetail />
+
+          {/* Popular Episodes Section */}
+          <PopularEpisodes 
+            onSelect={(episodeData: OmdbShowData & { showTitle: string }) => {
+              console.log('Selected episode:', episodeData);
+              // You could add additional functionality here if needed
+            }}
+          />
         </div>
       </div>
       {showForm && (

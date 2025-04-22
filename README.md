@@ -80,6 +80,9 @@ The project is still under development and has the following issues or missing p
 3.  Start the development server: `npm start`
 4.  Open the application in your browser: [http://localhost:3000](http://localhost:3000)
 
+## Wireframes
+1. On the folder wireframes you can find some quick sketches to represent the overall layout of the application. I can explain further my thought process behind the design decisions made during the creation of the application's user interface if necessary.
+
 ## Contributing
 
 Contributions are welcome! Please follow these steps:

@@ -2,6 +2,7 @@
   "name": "frontend-challenge",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://qzdu2mazrzfr3pvzuv6z5txkji.appsync-api.us-east-1.amazonaws.com/graphql",
   "dependencies": {
     "@apollo/client": "^3.13.8",
     "@tailwindcss/cli": "^4.1.4",
