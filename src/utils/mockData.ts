@@ -175,3 +175,8 @@ export const listEpisodes = (search: string = '', series: string = ''): MockEpis
     return matchesSearch && matchesSeries;
   });
 };
+
+export const getSeriesList = (): string[] => {
+  const seriesList = [...new Set(mockEpisodes.map(ep => ep.series))];
+  return seriesList.sort();
+};

@@ -12,6 +12,7 @@ import { ON_CREATE, ON_DELETE, ON_UPDATE, CREATE_EPISODE, UPDATE_EPISODE, LIST_E
 import { OmdbShowData } from './utils/omdbApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getSeriesList as getMockSeriesList } from './utils/mockData';
 
 const App: React.FC = () => {
   const [search, setSearch] = useState<string>('');
@@ -24,6 +25,7 @@ const App: React.FC = () => {
   const [selectedSeries, setSelectedSeries] = useState<string>('');
   const [selectedApiSeries, setSelectedApiSeries] = useState<string>('');
   const [apiSeasons, setApiSeasons] = useState<number[]>([]);
+  const [seriesList, setSeriesList] = useState<string[]>([]);
 
   const { data: created } = useSubscription(ON_CREATE);
   const { data: updated } = useSubscription(ON_UPDATE);
@@ -56,7 +58,12 @@ const App: React.FC = () => {
     return { seasons, episodes };
   };
 
-const { data } = useQuery(LIST_EPISODES, { 
+  useEffect(() => {
+    const mockSeries = getMockSeriesList();
+    setSeriesList(mockSeries);
+  }, []);
+
+  const { data } = useQuery(LIST_EPISODES, {
     variables: { search: debounced, series: selectedApiSeries },
     skip: !selectedApiSeries
   });
@@ -87,16 +94,16 @@ const { data } = useQuery(LIST_EPISODES, {
             <div className="flex flex-col gap-4 mb-4">
               <h2 className="text-xl font-bold">Episodes</h2>
               <div className="flex gap-4 items-center">
-                <label className="text-gray-300">Filter by Season:</label>
+                <label className="text-gray-300">Filter by Show:</label>
                 <select
                   value={selectedApiSeries}
                   onChange={(e) => setSelectedApiSeries(e.target.value)}
                   className="appearance-none bg-gray-700 text-white border border-gray-600 rounded py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-no-repeat bg-right bg-[url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] hover:bg-gray-600 flex-grow"
                 >
                   <option value="">All Shows</option>
-                  {apiSeasons.map((season) => (
-                    <option key={season} value={season}>
-                      Season {season}
+                  {seriesList.map((series) => (
+                    <option key={series} value={series}>
+                      {series}
                     </option>
                   ))}
                 </select>
