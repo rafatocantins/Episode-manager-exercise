@@ -111,6 +111,46 @@ export const mockEpisodes: MockEpisode[] = [
     description: 'After Will sees something terrible on trick-or-treat night, Mike wonders whether Eleven\'s still out there. Nancy wrestles with the truth about Barb.',
     releaseDate: '2017-10-27',
     imdbId: 'tt4574334'
+  },
+  {
+    id: '11',
+    series: 'Breaking Bad',
+    title: 'Pilot',
+    seasonNumber: 1,
+    episodeNumber: 1,
+    description: 'A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family\'s future.',
+    releaseDate: '2008-01-20',
+    imdbId: 'tt0903747'
+  },
+  {
+    id: '12',
+    series: 'Breaking Bad',
+    title: 'Cat\'s in the Bag...',
+    seasonNumber: 1,
+    episodeNumber: 2,
+    description: 'Walt and Jesse clean up after their first cook, but disposing of a body proves to be more difficult than expected.',
+    releaseDate: '2008-01-27',
+    imdbId: 'tt0903747'
+  },
+  {
+    id: '13',
+    series: 'The Sopranos',
+    title: 'Pilot',
+    seasonNumber: 1,
+    episodeNumber: 1,
+    description: 'Tony Soprano, a New Jersey mob boss, seeks psychiatric counseling to cope with work-related stress and family issues.',
+    releaseDate: '1999-01-10',
+    imdbId: 'tt0141842'
+  },
+  {
+    id: '14',
+    series: 'The Sopranos',
+    title: '46 Long',
+    seasonNumber: 1,
+    episodeNumber: 2,
+    description: 'While Tony deals with panic attacks, his nephew Christopher makes his bones by killing a made man.',
+    releaseDate: '1999-01-17',
+    imdbId: 'tt0141842'
   }
 ];
 
