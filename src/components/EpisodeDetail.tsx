@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_EPISODE, DELETE_EPISODE } from '../graphql/queries';
-import { getEpisodeById as getMockEpisode } from '../utils/mockData';
+import { getEpisodeById as getMockEpisode, deleteEpisodeById } from '../utils/mockData';
 import EpisodeAnalytics from './EpisodeAnalytics';
 import Modal from './Modal'; // Import the Modal component
 import EpisodeForm from './EpisodeForm';// Import EpisodeForm
@@ -37,15 +38,49 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
     }
 
     try {
-      await deleteEpisode({ variables: { id } });
-      // Handle successful deletion (e.g., navigate back to episode list, show a success message)
-      console.log("Episode deleted successfully");
-      toast.success("Episode deleted successfully!");
-      window.location.href = '/'; // Redirect to the home page after deletion
+      if (useMockData) {
+        // Delete from mock data if we're in mock mode
+        const deleted = deleteEpisodeById(id);
+        if (deleted) {
+          console.log("Episode deleted successfully from mock data");
+          toast.success("Episode deleted successfully from mock data!");
+          
+          // Dispatch a custom event to notify other components
+          window.dispatchEvent(new CustomEvent('mockDataChanged'));
+          
+          // Clear the selected episode ID by dispatching a custom event
+          window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
+        } else {
+          console.error("Failed to delete episode from mock data");
+          toast.error("Failed to delete episode from mock data");
+        }
+      } else {
+        // Try to delete using GraphQL
+        await deleteEpisode({ variables: { id } });
+        console.log("Episode deleted successfully");
+        toast.success("Episode deleted successfully!");
+        
+        // Clear the selected episode ID by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
+      }
     } catch (err) {
-      // Handle deletion error (e.g., show an error message)
-      console.error("Failed to delete episode", err);
-      toast.error("Failed to delete episode");
+      console.error("Failed to delete episode via GraphQL, attempting mock data fallback", err);
+      
+      // Fallback to mock data if GraphQL fails
+      const deleted = deleteEpisodeById(id);
+      if (deleted) {
+        console.log("Episode deleted successfully from mock data (fallback)");
+        toast.success("Episode deleted successfully from mock data!");
+        
+        // Dispatch a custom event to notify other components
+        window.dispatchEvent(new CustomEvent('mockDataChanged'));
+        
+        // Clear the selected episode ID by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
+      } else {
+        console.error("Failed to delete episode from mock data (fallback)");
+        toast.error("Failed to delete episode");
+      }
     }
   };
 
@@ -61,6 +96,23 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
       }
     }
   }, [useMockData, id]);
+  
+  // Listen for episode deleted events to clear the detail view if needed
+  useEffect(() => {
+    const handleEpisodeDeleted = (event: any) => {
+      const deletedId = event.detail?.id;
+      if (deletedId === id) {
+        // This is the episode we're currently displaying, so clear it
+        setMockEpisode(null);
+      }
+    };
+    
+    window.addEventListener('episodeDeleted', handleEpisodeDeleted);
+    
+    return () => {
+      window.removeEventListener('episodeDeleted', handleEpisodeDeleted);
+    };
+  }, [id]);
 
   // --- Themed Placeholder/Loading/Error States ---
 
@@ -110,6 +162,9 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
        return (
          <div className="p-6 text-center text-yellow-400 bg-gray-800 rounded-lg shadow-md border border-yellow-700">
            Offline episode data for ID "{id}" not found.
+           <p className="mt-2 text-sm text-gray-300">
+             The episode may have been deleted. Please select another episode from the list.
+           </p>
          </div>
        );
      }
@@ -117,6 +172,9 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
      return (
        <div className="p-6 text-center text-gray-500 bg-gray-800 rounded-lg shadow-md border border-gray-700">
          Episode not found or may have been deleted.
+         <p className="mt-2 text-sm text-gray-400">
+           Please select another episode from the list.
+         </p>
        </div>
      );
   }
@@ -167,14 +225,18 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         <EpisodeForm episodeId={id} onClose={() => setIsModalOpen(false)}/>
       </Modal>
       
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onDelete={() => {
-          handleDelete();
-          setIsDeleteModalOpen(false);
-        }}
-      />
+      {/* Render the delete confirmation modal at the root level using React Portal */}
+      {ReactDOM.createPortal(
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onDelete={() => {
+            handleDelete();
+            setIsDeleteModalOpen(false);
+          }}
+        />,
+        document.body
+      )}
 
       {/* Analytics section (already themed) */}
       <EpisodeAnalytics />

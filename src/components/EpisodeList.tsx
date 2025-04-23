@@ -37,6 +37,8 @@ const EpisodeList: React.FC<Props> = ({
 }) => {
   const [mockSeasons, setMockSeasons] = useState<number[]>([]);
   const [useMockData, setUseMockData] = useState<boolean>(false);
+  // Add a timestamp to force refresh when mock data changes
+  const [mockDataTimestamp, setMockDataTimestamp] = useState<number>(Date.now());
 
   // GraphQL query for episodes
   const { data, loading, error } = useQuery(LIST_EPISODES, {
@@ -62,6 +64,27 @@ const EpisodeList: React.FC<Props> = ({
     }
   });
 
+  // Listen for mock data changes and episode deletions
+  useEffect(() => {
+    const handleMockDataChanged = () => {
+      console.log('EpisodeList: Mock data changed event received');
+      setMockDataTimestamp(Date.now()); // Update timestamp to trigger a refresh
+    };
+
+    const handleEpisodeDeleted = () => {
+      console.log('EpisodeList: Episode deleted event received');
+      setMockDataTimestamp(Date.now()); // Update timestamp to trigger a refresh
+    };
+
+    window.addEventListener('mockDataChanged', handleMockDataChanged);
+    window.addEventListener('episodeDeleted', handleEpisodeDeleted);
+    
+    return () => {
+      window.removeEventListener('mockDataChanged', handleMockDataChanged);
+      window.removeEventListener('episodeDeleted', handleEpisodeDeleted);
+    };
+  }, []);
+
   // Prepare mock data as fallback
   useEffect(() => {
     if (useMockData) {
@@ -79,7 +102,7 @@ const EpisodeList: React.FC<Props> = ({
       setMockSeasons(seasons);
       onSeasonsLoaded(seasons);
     }
-  }, [useMockData, search, series]);
+  }, [useMockData, search, series, mockDataTimestamp]); // Add mockDataTimestamp to refresh when mock data changes
 
   // --- Themed Loading and Error States ---
   if ((loading || seasonsLoading) && !useMockData) {

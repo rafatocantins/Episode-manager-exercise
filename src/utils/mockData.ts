@@ -180,3 +180,9 @@ export const getSeriesList = (): string[] => {
   const seriesList = [...new Set(mockEpisodes.map(ep => ep.series))];
   return seriesList.sort();
 };
+
+export const deleteEpisodeById = (id: string): boolean => {
+  const initialLength = mockEpisodes.length;
+  mockEpisodes = mockEpisodes.filter(ep => ep.id !== id);
+  return mockEpisodes.length < initialLength; // Returns true if an episode was deleted
+};

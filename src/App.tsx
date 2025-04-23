@@ -43,7 +43,11 @@ const App: React.FC = () => {
   useEffect(() => {
     if (deleted) {
       console.log('Deleted:', deleted.onDeleteEpisode);
-      if (deleted.onDeleteEpisode === selectedId) setSelectedId(null);
+      if (deleted.onDeleteEpisode === selectedId) {
+        setSelectedId(null);
+        // Force a refresh of the episode list
+        window.dispatchEvent(new CustomEvent('mockDataChanged'));
+      }
     }
   }, [deleted, selectedId]);
 
@@ -59,9 +63,31 @@ const App: React.FC = () => {
     return { seasons, episodes };
   };
 
+  // Listen for mock data changes to update series list
   useEffect(() => {
+    const handleMockDataChanged = () => {
+      console.log('App: Mock data changed event received');
+      const mockSeries = getMockSeriesList();
+      setSeriesList(mockSeries);
+    };
+
+    const handleEpisodeDeleted = (event: any) => {
+      console.log('App: Episode deleted event received', event.detail);
+      // Clear the selected episode ID
+      setSelectedId(null);
+    };
+
+    window.addEventListener('mockDataChanged', handleMockDataChanged);
+    window.addEventListener('episodeDeleted', handleEpisodeDeleted);
+    
+    // Initial load
     const mockSeries = getMockSeriesList();
     setSeriesList(mockSeries);
+    
+    return () => {
+      window.removeEventListener('mockDataChanged', handleMockDataChanged);
+      window.removeEventListener('episodeDeleted', handleEpisodeDeleted);
+    };
   }, []);
 
   const { data } = useQuery(LIST_EPISODES, {
