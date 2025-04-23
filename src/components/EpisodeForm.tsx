@@ -191,18 +191,17 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
 
     if (episodeDetails) {
       setSelectedEpisode(episodeDetails);
-      const releasedDate = episodeDetails.Released;
       let formattedDate = '';
-      if (releasedDate) {
-        const dateParts = releasedDate.split(' ');
+      if (episodeDetails.Released) {
+        const dateParts = episodeDetails.Released.split(' ');
         const day = dateParts[0];
         const month = dateParts[1];
         const year = dateParts[2];
-        const monthNumber = new Date(Date.parse(month +" 1, "+ year)).getMonth()+1;
+        const monthNumber = new Date(Date.parse(month + " 1, " + year)).getMonth() + 1;
         formattedDate = `${year}-${monthNumber.toString().padStart(2, '0')}-${day.padStart(2, '0')}`;
       }
       setForm({
-        series: episodeDetails.seriesID || selectedShow?.Title || '',
+        series: selectedShow?.Title || '',
         title: episodeDetails.Title,
         description: episodeDetails.Plot,
         seasonNumber: Number(episodeDetails.Season),
@@ -232,16 +231,17 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
       toast.error(`Failed to ${action} episode`);
     } finally {
       if (!episodeId) {
-        mockEpisodes.push({
+        const newEpisode = {
           id: Math.random().toString(),
-          series: form.series,
+          series: selectedShow?.Title || form.series,
           title: form.title,
           description: form.description,
           seasonNumber: form.seasonNumber,
           episodeNumber: form.episodeNumber,
           releaseDate: form.releaseDate,
           imdbId: form.imdbId,
-        });
+        };
+        mockEpisodes.push(newEpisode);
         toast.success("Episode created successfully on mock data!");
       }
       onClose();

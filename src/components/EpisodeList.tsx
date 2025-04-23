@@ -11,6 +11,9 @@ interface Episode {
   title: string;
   seasonNumber: number;
   episodeNumber: number;
+  description: string;
+  releaseDate: string;
+  imdbId: string;
   imageUrl?: string; // Add optional fields if they might come from API
   averageRating?: number;
 }
@@ -32,13 +35,8 @@ const EpisodeList: React.FC<Props> = ({
   selectedSeason,
   selectedEpisodeId // Use the ID passed from the parent
 }) => {
-  const [mockEpisodes, setMockEpisodes] = useState<Episode[]>([]);
   const [mockSeasons, setMockSeasons] = useState<number[]>([]);
   const [useMockData, setUseMockData] = useState<boolean>(false);
-
-  useEffect(() => {
-    console.log("Search prop changed:", search);
-  }, [search]);
 
   // GraphQL query for episodes
   const { data, loading, error } = useQuery(LIST_EPISODES, {
@@ -76,7 +74,6 @@ const EpisodeList: React.FC<Props> = ({
           // imageUrl: `https://placehold.co/100x56/png?text=S${ep.seasonNumber}E${ep.episodeNumber}`,
           averageRating: Math.random() * (5 - 3) + 3 // Random rating between 3.0 and 5.0
       }));
-      setMockEpisodes(episodesWithMockExtras);
 
       const seasons = getMockSeasons(series);
       setMockSeasons(seasons);
@@ -114,10 +111,16 @@ const EpisodeList: React.FC<Props> = ({
   // Determine data source
   let episodes: Episode[] = [];
   if (useMockData) {
-    episodes = mockEpisodes;
+    episodes = getMockEpisodes(search, series);
+     episodes = episodes.map((ep: MockEpisode) => ({
+          ...ep,
+          // Add mock data here if your mock function doesn't provide it
+          // imageUrl: `https://placehold.co/100x56/png?text=S${ep.seasonNumber}E${ep.episodeNumber}`,
+          averageRating: Math.random() * (5 - 3) + 3 // Random rating between 3.0 and 5.0
+      }));
   } else if (data?.listEpisodes) {
     // Add mock rating/image if API doesn't provide it
-     episodes = data.listEpisodes.map((ep: Episode) => ({
+     episodes = data.listEpisodes.map((ep: any) => ({
          ...ep,
          averageRating: ep.averageRating ?? (Math.random() * (5 - 3) + 3) // Use API rating or fallback mock
          // imageUrl: ep.imageUrl ?? `https://placehold.co/100x56/png?text=S${ep.seasonNumber}E${ep.episodeNumber}`

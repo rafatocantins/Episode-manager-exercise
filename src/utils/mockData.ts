@@ -11,7 +11,7 @@ export interface MockEpisode {
   imdbId: string;
 }
 
-export const mockEpisodes: MockEpisode[] = [
+export let mockEpisodes: MockEpisode[] = [
   {
     id: '1',
     series: 'Stranger Things',
