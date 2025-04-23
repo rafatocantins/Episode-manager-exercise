@@ -78,6 +78,29 @@ export const fetchEpisodeData = async (
   }
 };
 
+export const searchShow = async (showName: string): Promise<OmdbShowData[]> => {
+  try {
+    const response = await fetch(
+      `https://www.omdbapi.com/?s=${encodeURIComponent(showName)}&apikey=${API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch show data');
+    }
+
+    const data = await response.json();
+
+    if (data.Response === 'False') {
+      return [];
+    }
+
+    return data.Search || [];
+  } catch (error) {
+    console.error('Error fetching show data:', error);
+    return [];
+  }
+};
+
 // Popular shows with their IMDB IDs
 export const popularShows = [
   { title: 'Stranger Things', imdbID: 'tt4574334' },
