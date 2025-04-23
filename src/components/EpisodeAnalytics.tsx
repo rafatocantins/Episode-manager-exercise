@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Placeholder data - replace with actual data fetching/props
+// mock data - to replace with actual data fetching/props
 const mockAnalyticsData = {
     averageRating: 4.2,
     ratingDistribution: [
@@ -46,7 +46,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({ data, title, barColor = 'bg-g
     const maxValue = Math.max(...data.map(item => item.value), 0);
 
     return (
-        <div className="mt-4"> {/* Removed outer container styling, handled by parent */}
+        <div className="mt-4"> {/* Removed outer container styling, handled by parent component */}
             {title && <h4 className="text-md font-semibold mb-3 text-gray-300">{title}</h4>}
             <div className={`flex items-end space-x-2 ${heightClass} w-full`}>
                 {data.map((item, index) => (
@@ -66,7 +66,7 @@ const SimpleBarChart: React.FC<BarChartProps> = ({ data, title, barColor = 'bg-g
 
 
 const EpisodeAnalytics: React.FC = () => {
-    // In a real app, you'd fetch this data or receive it via props
+    // In a real app, we'd fetch this data or receive it via props
     const analytics = mockAnalyticsData;
 
     const ratingChartData = analytics.ratingDistribution.map(r => ({ label: `${r.stars}★`, value: r.count }));
@@ -82,12 +82,12 @@ const EpisodeAnalytics: React.FC = () => {
                 <h3 className="text-lg font-semibold mb-3 text-gray-200">Filters</h3>
                 <div className="flex flex-col sm:flex-row gap-4">
                     {/* Themed select dropdowns */}
-                    <select className="p-2 border border-gray-500 rounded bg-gray-600 text-gray-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary flex-grow">
+                    <select className="appearance-none bg-gray-700 text-white border border-gray-600 rounded py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-no-repeat bg-right bg-[url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] hover:bg-gray-600 flex-grow">
                         <option>Last 30 Days</option>
                         <option>Last 90 Days</option>
                         <option>All Time</option>
                     </select>
-                    <select className="p-2 border border-gray-500 rounded bg-gray-600 text-gray-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary flex-grow">
+                    <select className="appearance-none bg-gray-700 text-white border border-gray-600 rounded py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-no-repeat bg-right bg-[url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] hover:bg-gray-600 flex-grow">
                         <option>All Viewers</option>
                         <option>Subscribers</option>
                         <option>New Viewers</option>

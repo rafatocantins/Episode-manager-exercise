@@ -24,7 +24,6 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
     skip: !id || useMockData,
     onError: () => {
       // If GraphQL fails, switch to mock data
-      console.warn("GraphQL query failed, attempting to use mock data.");
       setUseMockData(true);
     }
   });
@@ -33,7 +32,6 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
 
   const handleDelete = async () => {
     if (!id) {
-      console.error("Episode ID is null or undefined");
       return;
     }
 
@@ -42,34 +40,30 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         // Delete from mock data if we're in mock mode
         const deleted = deleteEpisodeById(id);
         if (deleted) {
-          console.log("Episode deleted successfully from mock data");
           toast.success("Episode deleted successfully from mock data!");
           
-          // Dispatch a custom event to notify other components
+          // Dispatch a custom event to notify other components // new solution
+          // This will trigger a refresh in the parent component or any other component listening for this event
           window.dispatchEvent(new CustomEvent('mockDataChanged'));
           
           // Clear the selected episode ID by dispatching a custom event
           window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
         } else {
-          console.error("Failed to delete episode from mock data");
           toast.error("Failed to delete episode from mock data");
         }
       } else {
         // Try to delete using GraphQL
         await deleteEpisode({ variables: { id } });
-        console.log("Episode deleted successfully");
         toast.success("Episode deleted successfully!");
         
         // Clear the selected episode ID by dispatching a custom event
         window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
       }
     } catch (err) {
-      console.error("Failed to delete episode via GraphQL, attempting mock data fallback", err);
       
       // Fallback to mock data if GraphQL fails
       const deleted = deleteEpisodeById(id);
       if (deleted) {
-        console.log("Episode deleted successfully from mock data (fallback)");
         toast.success("Episode deleted successfully from mock data!");
         
         // Dispatch a custom event to notify other components
@@ -78,7 +72,6 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         // Clear the selected episode ID by dispatching a custom event
         window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
       } else {
-        console.error("Failed to delete episode from mock data (fallback)");
         toast.error("Failed to delete episode");
       }
     }
@@ -225,7 +218,7 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         <EpisodeForm episodeId={id} onClose={() => setIsModalOpen(false)}/>
       </Modal>
       
-      {/* Render the delete confirmation modal at the root level using React Portal */}
+      {/* Render the delete confirmation modal at the root level using React Portal - this ensures it's always visible above all other contents */}
       {ReactDOM.createPortal(
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
@@ -238,7 +231,7 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         document.body
       )}
 
-      {/* Analytics section (already themed) */}
+      {/* Analytics section */}
       <EpisodeAnalytics />
     </div>
   );

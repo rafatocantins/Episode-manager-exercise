@@ -304,7 +304,7 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
             setForm({ ...form, series: e.target.value });
           }
         }}
-        className="bg-gray-800 text-white border border-gray-700 rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        className="appearance-none bg-gray-700 text-white border border-gray-600 rounded py-2 pl-3 pr-8 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-no-repeat bg-right bg-[url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] hover:bg-gray-600"
       >
         <option value="">Select Series</option>
         {searchResults.map((result) => (
@@ -318,7 +318,7 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
         id="selectSeason"
         value={selectedSeason || ''}
         onChange={(e) => handleSeasonSelect(Number(e.target.value))}
-        className="bg-gray-800 text-white border border-gray-700 rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        className="appearance-none bg-gray-700 text-white border border-gray-600 rounded py-2 pl-3 pr-8 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-no-repeat bg-right bg-[url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] hover:bg-gray-600"
       >
         <option value="">Select Season</option>
         {seasons.map((season) => (
@@ -331,7 +331,7 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
       <select
         value={selectedEpisode ? selectedEpisode.Title : ''}
         onChange={(e) => handleEpisodeSelect(e.target.value)}
-        className="bg-gray-800 text-white border border-gray-700 rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        className="appearance-none bg-gray-700 text-white border border-gray-600 rounded py-2 pl-3 pr-8 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-no-repeat bg-right bg-[url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] hover:bg-gray-600"
       >
         <option value="">{selectedEpisode ? selectedEpisode.Title : 'Select Episode'}</option>
         {episodes.map((episode) => (
