@@ -8,7 +8,7 @@ interface EpisodeListItemProps {
   seasonNumber: number;
   episodeNumber: number;
   averageRating?: number; // Optional for now
-  onSelect: (id: string) => void;
+  onSelect: (id: string, series: string) => void;
   isSelected: boolean; // To highlight the selected item
 }
 
@@ -53,7 +53,7 @@ const EpisodeListItem: React.FC<EpisodeListItemProps> = ({
   `;
 
   return (
-    <li className={itemClasses} onClick={() => onSelect(id)}>
+    <li className={itemClasses} onClick={() => onSelect(id, series)}>
       {/* Left Side: Image */}
       <div className="w-24 h-16"> {/* Fixed size for image container */}
         <img

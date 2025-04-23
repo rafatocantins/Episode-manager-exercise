@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 interface ShowDetailProps {
-  showId?: string;
+  showTitle: string | null;
 }
 
 interface ShowInfo {
@@ -29,7 +29,7 @@ interface ShowInfo {
   Response: string;
 }
 
-const ShowDetail: React.FC<ShowDetailProps> = () => {
+const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
   // Fallback data in case API fails
   const fallbackData: ShowInfo = {
     Title: "Stranger Things",
@@ -62,11 +62,17 @@ const ShowDetail: React.FC<ShowDetailProps> = () => {
 
   useEffect(() => {
     const fetchShowInfo = async () => {
+      if (!showTitle) {
+        setShowInfo(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         // Hardcoded values to ensure it works
         const apiKey = '41d28581';
-        const showName = 'stranger+things';
+        const showName = showTitle.replace(/ /g, '+');
         
         console.log('API Key:', apiKey);
         console.log('Show Name:', showName);
@@ -84,7 +90,7 @@ const ShowDetail: React.FC<ShowDetailProps> = () => {
         const data = await response.json();
         console.log('Data received:', data);
         
-        if (data) {
+        if (data.Error) {
           throw new Error(data.Error || 'Failed to fetch show information');
         }
 
@@ -101,12 +107,20 @@ const ShowDetail: React.FC<ShowDetailProps> = () => {
     };
 
     fetchShowInfo();
-  }, []);
+  }, [showTitle]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!showTitle) {
+    return (
+      <div className="bg-gray-800 rounded-lg p-4 text-center">
+        <p className="text-gray-400">No episode selected</p>
       </div>
     );
   }

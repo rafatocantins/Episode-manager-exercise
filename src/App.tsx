@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const debounced = useDebounce(search, 400);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedShowTitle, setSelectedShowTitle] = useState<string | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -115,7 +116,7 @@ const App: React.FC = () => {
               <div className='mb-4'>
                 <EpisodeList
                   search={debounced}
-                  onSelect={(id) => { setSelectedId(id); setShowForm(false); }}
+                  onSelect={(id, series) => { setSelectedId(id); setSelectedShowTitle(series); setShowForm(false); }}
                   series={selectedApiSeries}
                   onSeasonsLoaded={(seasons) => setApiSeasons(seasons)}
                   selectedSeason={selectedSeries}
@@ -136,7 +137,7 @@ const App: React.FC = () => {
         {/* Left Column */}
         <div className="space-y-6">
           {/* Show Details from OMDB API */}
-          <ShowDetail />
+          <ShowDetail showTitle={selectedShowTitle} />
 
           {/* Popular Episodes Section */}
           <PopularEpisodes

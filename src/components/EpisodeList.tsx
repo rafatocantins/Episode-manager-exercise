@@ -17,7 +17,7 @@ interface Episode {
 
 interface Props {
   search: string;
-  onSelect: (id: string) => void; // This prop remains to notify the parent
+  onSelect: (id: string, series: string) => void; // This prop remains to notify the parent
   series: string;
   onSeasonsLoaded: (seasons: number[]) => void;
   selectedSeason: string;
@@ -150,7 +150,7 @@ const EpisodeList: React.FC<Props> = ({
               seasonNumber={ep.seasonNumber}
               episodeNumber={ep.episodeNumber}
               averageRating={ep.averageRating} // Pass potential rating
-              onSelect={onSelect} // Pass the original onSelect handler to notify parent
+              onSelect={(id, series) => onSelect(id, series)} // Pass the original onSelect handler to notify parent
               isSelected={ep.id === selectedEpisodeId} // Check against ID from parent
             />
           ))}
