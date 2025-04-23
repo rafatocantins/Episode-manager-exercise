@@ -104,7 +104,7 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
     while (true) {
       try {
         const response = await fetch(
-          `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=41d28581`
+          `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=41d28581` // add to .env file later
         );
         const data = await response.json();
 
@@ -227,7 +227,6 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
       onClose();
     } catch (err) {
       const action = episodeId ? 'update' : 'create';
-      console.error(`Failed to ${action} episode`, err);
       toast.error(`Failed to ${action} episode`);
     } finally {
       if (!episodeId) {
@@ -357,7 +356,7 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
         placeholder="Season Number"
         className="bg-gray-800 text-white border border-gray-700 rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
       />
-      <label className="block text-white text-sm font-bold mb-2" htmlFor="episodeNumber">Episode Number</label>
+      <label className="block text-white text-sm font-bold mb-2" htmlFor="episodeNumber">Episode Number</label> {/* Create component for this field to avoid repetition */}
       <input
         type="number"
         id="episodeNumber"
