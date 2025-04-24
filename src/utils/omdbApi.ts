@@ -28,6 +28,26 @@ export interface OmdbShowData {
   Episode?: string;
 }
 
+export interface SearchResult {
+  imdbID: string;
+  Title: string;
+  Year: string;
+  Poster: string;
+}
+
+export interface Season {
+  seasonNumber: number;
+}
+
+export interface Episode {
+  Title: string;
+  imdbID: string;
+  Plot: string;
+  Released: string;
+  Season: string;
+  episodeNumber: string;
+}
+
 export const fetchShowData = async (title: string): Promise<OmdbShowData> => {
   try {
     const response = await fetch(
@@ -153,5 +173,81 @@ export const getEpisodeData = async (
   } catch (error) {
     console.error('Error getting episode data:', error);
     throw error;
+  }
+};
+
+export const fetchSeasons = async (show: SearchResult): Promise<Season[]> => {
+  let seasonNumber = 1;
+  const availableSeasons: Season[] = [];
+
+  while (true) {
+    try {
+      const response = await fetch(
+        `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=${API_KEY}`
+      );
+      const data = await response.json();
+
+      if (data.Response === 'False') {
+        break;
+      }
+
+      availableSeasons.push({ seasonNumber });
+      seasonNumber++;
+    } catch (error) {
+      console.error('Error fetching seasons:', error);
+      break;
+    }
+  }
+
+  return availableSeasons;
+};
+
+export const fetchEpisodesForSeason = async (show: SearchResult, seasonNumber: number): Promise<Episode[]> => {
+  try {
+    const response = await fetch(
+      `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=${API_KEY}`
+    );
+    const data = await response.json();
+
+    if (data.Response === 'False' || !data.Episodes) {
+      return [];
+    }
+
+    const episodesWithDetails: Episode[] = await Promise.all(
+      data.Episodes.map(async (episode: any) => {
+        const episodeDetails = await fetchEpisodeDetails(episode.imdbID);
+        return {
+          Title: episode.Title,
+          imdbID: episode.imdbID,
+          Plot: episodeDetails?.Plot || '',
+          Released: episodeDetails?.Released || '',
+          Season: episodeDetails?.Season || '',
+          episodeNumber: episode.Episode,
+        };
+      })
+    );
+
+    return episodesWithDetails;
+  } catch (error) {
+    console.error('Error fetching episodes:', error);
+    return [];
+  }
+};
+
+export const fetchEpisodeDetails = async (imdbID: string) => {
+  try {
+    const response = await fetch(
+      `https://www.omdbapi.com/?i=${imdbID}&apikey=${API_KEY}`
+    );
+    const data = await response.json();
+
+    if (data.Response === 'False') {
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching episode details:', error);
+    return null;
   }
 };

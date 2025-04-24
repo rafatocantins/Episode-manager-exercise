@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import { GET_EPISODE, UPDATE_EPISODE, CREATE_EPISODE } from '../graphql/queries';
 import { toast } from 'react-toastify';
 import { useDebounce } from '../hooks/useDebounce';
-import { searchShow } from '../utils/omdbApi';
+import { searchShow, fetchSeasons, fetchEpisodesForSeason, fetchEpisodeDetails, SearchResult, Season, Episode } from '../utils/omdbApi';
 import { mockEpisodes } from '../utils/mockData';
 
 interface FormProps {
@@ -16,29 +16,9 @@ interface FormProps {
   imdbId: string;
 }
 
-interface SearchResult {
-  imdbID: string;
-  Title: string;
-  Year: string;
-  Poster: string;
-}
-
 interface Props {
   episodeId: string | null;
   onClose: () => void;
-}
-
-interface Season {
-  seasonNumber: number;
-}
-
-interface Episode {
-  Title: string;
-  imdbID: string;
-  Plot: string;
-  Released: string;
-  Season: string;
-  episodeNumber: string;
 }
 
 const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
@@ -97,92 +77,25 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
     fetchData();
   }, [debouncedSearchTerm]);
 
-  const fetchSeasons = async (show: SearchResult) => {
-    let seasonNumber = 1;
-    const availableSeasons: Season[] = [];
-
-    while (true) {
-      try {
-        const response = await fetch(
-          `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=41d28581` // add to .env file later
-        );
-        const data = await response.json();
-
-        if (data.Response === 'False') {
-          break;
-        }
-
-        availableSeasons.push({ seasonNumber });
-        seasonNumber++;
-      } catch (error) {
-        console.error('Error fetching seasons:', error);
-        break;
-      }
-    }
-
+  const handleFetchSeasons = async (show: SearchResult) => {
+    const availableSeasons = await fetchSeasons(show);
     setSeasons(availableSeasons);
   };
 
-  const fetchEpisodes = async (show: SearchResult, seasonNumber: number) => {
-    try {
-      const response = await fetch(
-        `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=41d28581`
-      );
-      const data = await response.json();
-
-      if (data.Response === 'False' || !data.Episodes) {
-        setEpisodes([]);
-        return;
-      }
-
-      const episodesWithDetails: Episode[] = await Promise.all(
-        data.Episodes.map(async (episode: any) => {
-          const episodeDetails = await fetchEpisodeDetails(episode.imdbID);
-          return {
-            Title: episode.Title,
-            imdbID: episode.imdbID,
-            Plot: episodeDetails?.Plot || '',
-            Released: episodeDetails?.Released || '',
-            Season: episodeDetails?.Season || '',
-            episodeNumber: episode.Episode,
-          };
-        })
-      );
-
-      setEpisodes(episodesWithDetails);
-    } catch (error) {
-      console.error('Error fetching episodes:', error);
-      setEpisodes([]);
-    }
-  };
-
-  const fetchEpisodeDetails = async (imdbID: string) => {
-    try {
-      const response = await fetch(
-        `https://www.omdbapi.com/?i=${imdbID}&apikey=41d28581`
-      );
-      const data = await response.json();
-
-      if (data.Response === 'False') {
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error fetching episode details:', error);
-      return null;
-    }
+  const handleFetchEpisodes = async (show: SearchResult, seasonNumber: number) => {
+    const episodesData = await fetchEpisodesForSeason(show, seasonNumber);
+    setEpisodes(episodesData);
   };
 
   const handleShowSelect = (show: SearchResult) => {
     setSelectedShow(show);
-    fetchSeasons(show);
+    handleFetchSeasons(show);
   };
 
   const handleSeasonSelect = (seasonNumber: number) => {
     setSelectedSeason(seasonNumber);
     if (selectedShow) {
-      fetchEpisodes(selectedShow, seasonNumber);
+      handleFetchEpisodes(selectedShow, seasonNumber);
     }
   };
 
