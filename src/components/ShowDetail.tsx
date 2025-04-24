@@ -1,37 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { fetchShowData, OmdbShowData } from '../utils/omdbApi';
 
 interface ShowDetailProps {
   showTitle: string | null;
 }
 
-interface ShowInfo {
-  Title: string;
-  Year: string;
-  Rated: string;
-  Released: string;
-  Runtime: string;
-  Genre: string;
-  Director: string;
-  Writer: string;
-  Actors: string;
-  Plot: string;
-  Language: string;
-  Country: string;
-  Awards: string;
-  Poster: string;
-  Ratings: { Source: string; Value: string }[];
-  Metascore: string;
-  imdbRating: string;
-  imdbVotes: string;
-  imdbID: string;
-  Type: string;
-  totalSeasons: string;
-  Response: string;
-}
-
 const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
   // Fallback data in case API fails
-  const fallbackData: ShowInfo = {
+  const fallbackData: OmdbShowData = {
     Title: "Stranger Things",
     Year: "2016–2025",
     Rated: "TV-14",
@@ -56,7 +32,7 @@ const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
     Response: "True"
   };
   
-  const [showInfo, setShowInfo] = useState<ShowInfo | null>(null);
+  const [showInfo, setShowInfo] = useState<OmdbShowData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,26 +59,11 @@ const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
 
       try {
         setLoading(true);
-        // Hardcoded values to ensure it works
-        const apiKey = '41d28581';
-        const showName = showTitle.replace(/ /g, '+');
-
-        const response = await fetch(
-          `https://www.omdbapi.com/?t=${showName}&apikey=${apiKey}`
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch show information');
-        }
-
-        const data = await response.json();
-
-        if (data.Error) {
-          throw new Error(data.Error || 'Failed to fetch show information');
-        }
-
+        const data = await fetchShowData(showTitle);
         setShowInfo(data);
+        setError(null);
       } catch (err: any) {
+        console.error('Error fetching show data:', err);
         setShowInfo(fallbackData);
         setError(null);
       } finally {
