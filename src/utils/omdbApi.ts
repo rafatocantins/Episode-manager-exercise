@@ -1,5 +1,6 @@
 // OMDB API utility functions
-const API_KEY = '41d28581';
+const API_KEY = process.env.REACT_APP_OMDB_API_KEY || '41d28581'; // in case of no env variable, use a default key for testing
+const BASE_URL = process.env.REACT_APP_OMDB_BASE_URL || 'http://www.omdbapi.com'; // in case of no env variable, use a default URL for testing
 
 export interface OmdbShowData {
   Title: string;
@@ -51,7 +52,7 @@ export interface Episode {
 export const fetchShowData = async (title: string): Promise<OmdbShowData> => {
   try {
     const response = await fetch(
-      `https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${API_KEY}`
+      `${BASE_URL}/?t=${encodeURIComponent(title)}&apikey=${API_KEY}`
     );
     
     if (!response.ok) {
@@ -78,7 +79,7 @@ export const fetchEpisodeData = async (
 ): Promise<OmdbShowData> => {
   try {
     const response = await fetch(
-      `https://www.omdbapi.com/?i=${imdbID}&Season=${season}&Episode=${episode}&apikey=${API_KEY}`
+      `${BASE_URL}/?i=${imdbID}&Season=${season}&Episode=${episode}&apikey=${API_KEY}`
     );
     
     if (!response.ok) {
@@ -101,7 +102,7 @@ export const fetchEpisodeData = async (
 export const searchShow = async (showName: string): Promise<OmdbShowData[]> => {
   try {
     const response = await fetch(
-      `https://www.omdbapi.com/?s=${encodeURIComponent(showName)}&apikey=${API_KEY}`
+      `${BASE_URL}/?s=${encodeURIComponent(showName)}&apikey=${API_KEY}`
     );
 
     if (!response.ok) {
@@ -183,7 +184,7 @@ export const fetchSeasons = async (show: SearchResult): Promise<Season[]> => {
   while (true) {
     try {
       const response = await fetch(
-        `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=${API_KEY}`
+        `${BASE_URL}/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=${API_KEY}`
       );
       const data = await response.json();
 
@@ -205,7 +206,7 @@ export const fetchSeasons = async (show: SearchResult): Promise<Season[]> => {
 export const fetchEpisodesForSeason = async (show: SearchResult, seasonNumber: number): Promise<Episode[]> => {
   try {
     const response = await fetch(
-      `https://www.omdbapi.com/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=${API_KEY}`
+      `${BASE_URL}/?t=${encodeURIComponent(show.Title)}&Season=${seasonNumber}&apikey=${API_KEY}`
     );
     const data = await response.json();
 
@@ -237,7 +238,7 @@ export const fetchEpisodesForSeason = async (show: SearchResult, seasonNumber: n
 export const fetchEpisodeDetails = async (imdbID: string) => {
   try {
     const response = await fetch(
-      `https://www.omdbapi.com/?i=${imdbID}&apikey=${API_KEY}`
+      `${BASE_URL}/?i=${imdbID}&apikey=${API_KEY}`
     );
     const data = await response.json();
 
