@@ -97,6 +97,7 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
   }, [useMockData, id]);
   
   // Listen for episode deleted events to clear the detail view if needed
+  // Also listen for mock data changes to refresh the view
   useEffect(() => {
     const handleEpisodeDeleted = (event: any) => {
       const deletedId = event.detail?.id;
@@ -106,12 +107,22 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
       }
     };
     
+    const handleMockDataChanged = () => {
+      if (useMockData && id) {
+        // Refresh the episode data from mock data
+        const updatedEpisode = getMockEpisode(id);
+        setMockEpisode(updatedEpisode);
+      }
+    };
+    
     window.addEventListener('episodeDeleted', handleEpisodeDeleted);
+    window.addEventListener('mockDataChanged', handleMockDataChanged);
     
     return () => {
       window.removeEventListener('episodeDeleted', handleEpisodeDeleted);
+      window.removeEventListener('mockDataChanged', handleMockDataChanged);
     };
-  }, [id]);
+  }, [id, useMockData]);
 
   // --- Themed Placeholder/Loading/Error States ---
 
@@ -221,6 +232,9 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
       </div>
 
       <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h2 className="text-2xl font-bold mb-4">
+          Edit Episode
+        </h2>
         <EpisodeForm episodeId={id} onClose={() => setIsModalOpen(false)}/>
       </Modal>
       

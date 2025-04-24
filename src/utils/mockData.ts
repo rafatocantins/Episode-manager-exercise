@@ -186,3 +186,16 @@ export const deleteEpisodeById = (id: string): boolean => {
   mockEpisodes = mockEpisodes.filter(ep => ep.id !== id);
   return mockEpisodes.length < initialLength; // Returns true if an episode was deleted
 };
+
+export const updateEpisodeById = (id: string, updatedData: Partial<MockEpisode>): boolean => {
+  const episodeIndex = mockEpisodes.findIndex(ep => ep.id === id);
+  if (episodeIndex === -1) return false;
+  
+  // Update only the fields that are provided
+  mockEpisodes[episodeIndex] = {
+    ...mockEpisodes[episodeIndex],
+    ...updatedData
+  };
+  
+  return true; // Return true to indicate successful update
+};
