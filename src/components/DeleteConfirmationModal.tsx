@@ -4,9 +4,10 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
+  resetShowDetails: () => void;
 }
 
-const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onDelete }) => {
+const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onDelete, resetShowDetails }) => {
   if (!isOpen) {
     return null;
   }
@@ -24,7 +25,10 @@ const DeleteConfirmationModal: React.FC<Props> = ({ isOpen, onClose, onDelete })
           <div className="flex justify-end space-x-2">
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
-              onClick={onDelete}
+              onClick={() => {
+                onDelete();
+                resetShowDetails();
+              }}
             >
               Delete
             </button>

@@ -61,10 +61,23 @@ const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleResetShowDetails = () => {
+      setShowInfo(null);
+    };
+
+    window.addEventListener('resetShowDetails', handleResetShowDetails);
+
+    return () => {
+      window.removeEventListener('resetShowDetails', handleResetShowDetails);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchShowInfo = async () => {
       if (!showTitle) {
         setShowInfo(null);
         setLoading(false);
+        setError(null);
         return;
       }
 
@@ -73,32 +86,23 @@ const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
         // Hardcoded values to ensure it works
         const apiKey = '41d28581';
         const showName = showTitle.replace(/ /g, '+');
-        
-        console.log('API Key:', apiKey);
-        console.log('Show Name:', showName);
-        
+
         const response = await fetch(
           `https://www.omdbapi.com/?t=${showName}&apikey=${apiKey}`
         );
-
-        console.log('Response:', response);
 
         if (!response.ok) {
           throw new Error('Failed to fetch show information');
         }
 
         const data = await response.json();
-        console.log('Data received:', data);
-        
+
         if (data.Error) {
           throw new Error(data.Error || 'Failed to fetch show information');
         }
 
         setShowInfo(data);
       } catch (err: any) {
-        console.error('Error fetching show info:', err);
-        console.log('Using fallback data instead');
-        // Use fallback data instead of showing an error
         setShowInfo(fallbackData);
         setError(null);
       } finally {
@@ -125,10 +129,18 @@ const ShowDetail: React.FC<ShowDetailProps> = ({ showTitle }) => {
     );
   }
 
-  if (error || !showInfo) {
+  if (error) {
     return (
       <div className="bg-red-500 bg-opacity-20 text-red-100 p-4 rounded">
-        <p>Error loading show information: {error || 'Unknown error'}</p>
+        <p>Error loading show information: {error}</p>
+      </div>
+    );
+  }
+
+  if (!showInfo) {
+    return (
+      <div className="bg-gray-800 rounded-lg p-4 text-center">
+        <p className="text-gray-400">No episode selected</p>
       </div>
     );
   }

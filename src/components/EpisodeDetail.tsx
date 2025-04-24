@@ -19,6 +19,10 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
+  const resetShowDetails = () => {
+    window.dispatchEvent(new CustomEvent('resetShowDetails'));
+  };
+
   const { data, loading, error } = useQuery(GET_EPISODE, {
     variables: { id },
     skip: !id || useMockData,
@@ -58,6 +62,7 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         
         // Clear the selected episode ID by dispatching a custom event
         window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
+        window.dispatchEvent(new CustomEvent('clearShowTitle'));
       }
     } catch (err) {
       
@@ -71,6 +76,7 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
         
         // Clear the selected episode ID by dispatching a custom event
         window.dispatchEvent(new CustomEvent('episodeDeleted', { detail: { id } }));
+        window.dispatchEvent(new CustomEvent('clearShowTitle'));
       } else {
         toast.error("Failed to delete episode");
       }
@@ -227,6 +233,7 @@ const EpisodeDetail: React.FC<Props> = ({ id }) => {
             handleDelete();
             setIsDeleteModalOpen(false);
           }}
+          resetShowDetails={resetShowDetails}
         />,
         document.body
       )}

@@ -25,6 +25,18 @@ const App: React.FC = () => {
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
   const [selectedSeries, setSelectedSeries] = useState<string>('');
   const [selectedApiSeries, setSelectedApiSeries] = useState<string>('');
+
+  useEffect(() => {
+    const handleClearShowTitle = () => {
+      setSelectedShowTitle(null);
+    };
+
+    window.addEventListener('clearShowTitle', handleClearShowTitle);
+
+    return () => {
+      window.removeEventListener('clearShowTitle', handleClearShowTitle);
+    };
+  }, []);
   const [apiSeasons, setApiSeasons] = useState<number[]>([]);
   const [seriesList, setSeriesList] = useState<string[]>([]);
 
