@@ -228,6 +228,8 @@ const EpisodeForm: React.FC<Props> = ({ episodeId, onClose }) => {
           imdbId: form.imdbId,
         };
         mockEpisodes.push(newEpisode);
+        // Trigger a refresh of the episode list and series list
+        window.dispatchEvent(new CustomEvent('mockDataChanged'));
         toast.success("Episode created successfully on mock data!");
       }
       onClose();

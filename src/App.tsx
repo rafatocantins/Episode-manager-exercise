@@ -45,11 +45,19 @@ const App: React.FC = () => {
   const { data: deleted } = useSubscription(ON_DELETE);
 
   useEffect(() => {
-    if (created) console.log('Created:', created.onCreateEpisode);
+    if (created) {
+      console.log('Created:', created.onCreateEpisode);
+      // Force a refresh of the episode list and series list when a new episode is created
+      window.dispatchEvent(new CustomEvent('mockDataChanged'));
+    }
   }, [created]);
 
   useEffect(() => {
-    if (updated) console.log('Updated:', updated.onUpdateEpisode);
+    if (updated) {
+      console.log('Updated:', updated.onUpdateEpisode);
+      // Also refresh when an episode is updated (in case series was changed)
+      window.dispatchEvent(new CustomEvent('mockDataChanged'));
+    }
   }, [updated]);
 
   useEffect(() => {
@@ -81,6 +89,12 @@ const App: React.FC = () => {
       console.log('App: Mock data changed event received');
       const mockSeries = getMockSeriesList();
       setSeriesList(mockSeries);
+      
+      // If the selected series is no longer in the list (e.g., after deletion of all episodes of that series),
+      // reset the filter to show all series
+      if (selectedApiSeries && !mockSeries.includes(selectedApiSeries)) {
+        setSelectedApiSeries('');
+      }
     };
 
     const handleEpisodeDeleted = (event: any) => {
@@ -100,7 +114,7 @@ const App: React.FC = () => {
       window.removeEventListener('mockDataChanged', handleMockDataChanged);
       window.removeEventListener('episodeDeleted', handleEpisodeDeleted);
     };
-  }, []);
+  }, [selectedApiSeries]);
 
   const { data } = useQuery(LIST_EPISODES, {
     variables: { search: debounced, series: selectedApiSeries },
